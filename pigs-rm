@@ -1,0 +1,32 @@
+#!/bin/dash
+
+if [ ! -d .pig ]
+then 
+    echo "pigs-commit: error: pigs repository directory .pig not found" 1>&2
+    exit 1
+fi
+
+if [ $# -eq 0 ]
+then 
+    echo "usage: pigs-rm [--force] [--cached] <filenames>" 1>&2
+    exit 1
+fi
+
+for file in "$@"
+do 
+    if [ "$file" = "--cached" ]
+    then 
+        continue;
+    fi
+
+    if [ "$file" = "--force" ]
+    then 
+        continue;
+    fi
+
+    if [ ! -e "$file" ] 
+    then 
+        echo "pigs-rm: error: '$file' is not in the pigs repository" 1>&2
+        exit 1
+    fi
+done

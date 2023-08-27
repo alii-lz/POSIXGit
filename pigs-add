@@ -1,0 +1,46 @@
+#!/bin/dash
+
+# error checking
+if [ ! -d .pig ]
+then
+    echo "pigs-add: error: pigs repository directory .pig not found" 1>&2
+    exit 1
+fi
+
+# error checking
+if [ $# -eq 0 ]
+then 
+    echo "usage: pigs-add <filenames>" 1>&2
+    exit 1
+fi
+
+filesAdded=0
+# loop that does the adding
+for file in "$@"
+do
+    if  [ -f "$file" ] 
+    then 
+        if ! diff -q "$file" ".pig/index/$file" >/dev/null 2>&1
+        then 
+            cp "$file" ".pig/index/"
+            filesAdded=1
+        fi
+    else 
+        echo "pigs-add: error: can not open '$file'" 1>&2
+        exit 1
+    fi
+done
+
+# inserts the current addNum to mark that theres a new add thats been made
+addNum=$(tail -n 1 ".pig/addLogs")
+if [ "$addNum" = "" ]  
+then 
+    addNum=0
+else 
+    addNum=$((addNum + 1))
+fi
+
+if [ "$filesAdded" -eq 1 ]
+then 
+    echo "$addNum" >> ".pig/addLogs"
+fi

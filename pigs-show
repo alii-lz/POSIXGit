@@ -1,0 +1,55 @@
+#!/bin/dash
+
+# error checking
+if [ ! -d ".pig" ]
+then 
+    echo "pigs-show: error: pigs repository directory .pig not found" 1>&2
+    exit 1
+fi
+
+# error checking
+if [ ! $# -eq 1 ]
+then 
+    echo "usage: pigs-show <commit>:<filename>" 1>&2
+    exit 1
+fi
+
+# error checking
+format=$(echo "$1" | grep -E '^[0-9]*:.*$')
+if [ "$format" = "" ]
+then 
+    echo "pigs-show: error: invalid object $1" 1>&2
+    exit 1
+fi
+
+commitNum=$(echo "$1" | cut -d ':' -f1)
+file=$(echo "$1" | cut -d ':' -f2)
+
+
+if [ "$commitNum" = "" ] 
+then 
+    if [ ! -e ".pig/index/$file" ]
+    then  
+        echo "pigs-show: error: '$file' not found in index" 1>&2
+        exit 1
+    fi
+
+    cat ".pig/index/$file"
+
+else 
+
+    if [ ! -d ".pig/repo/$commitNum" ] 
+    then 
+        echo "pigs-show: error: unknown commit '$commitNum'" 1>&2
+        exit 1
+    fi
+
+    if [ ! -e ".pig/repo/$commitNum/$file" ]
+    then 
+        echo "pigs-show: error: '$file' not found in commit $commitNum" 1>&2
+        exit 1
+    fi
+
+    cat ".pig/repo/$commitNum/$file"
+fi
+

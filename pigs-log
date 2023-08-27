@@ -1,0 +1,17 @@
+#!/bin/dash
+
+# error checking
+if [ ! -d ".pig" ]
+then 
+    echo "pigs-show: error: pigs repository directory .pig not found" 1>&2
+    exit 1
+fi
+# error checking
+if [ ! $# -eq 0 ]
+then
+    echo "usage: pigs-log" 1>&2
+    exit 1
+else 
+    # else print the commitLogs file in reverse
+    tac ".pig/commitLogs"
+fi 

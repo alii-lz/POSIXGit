@@ -1,2 +1,4 @@
 # POSIXGit
-POSIX Implementation of Git in Shell.
+
+POSIX Implementation of a subset of Git in Shell.
+Tests written in shell.

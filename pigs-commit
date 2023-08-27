@@ -1,0 +1,55 @@
+#!/bin/dash
+
+# error checking
+if [ ! -d .pig ]
+then 
+    echo "pigs-commit: error: pigs repository directory .pig not found" 1>&2
+    exit 1
+fi
+
+# this if statements handles if its pigs-commit -m
+if [ "$#" -eq 2 ] && [ "$1" = "-m" ] && [ -n "$2" ] && [ ! "$2" = "-a" ]
+then 
+    commitNum=$(tail -n 1 ".pig/commitLogs" |cut -d " " -f1)
+    addNum=$(tail -n 1 ".pig/addLogs")
+
+    if [ "$addNum" = "" ]
+    then 
+        echo "nothing to commit"
+        exit 1
+    else 
+        addNum=$((addNum + 1))
+    fi 
+
+    if [ "$commitNum" = "" ]  
+    then 
+        commitNum=0
+    else 
+        commitNum=$((commitNum + 1))
+    fi
+
+    if [ "$addNum" -eq "$commitNum" ]
+    then 
+        echo "nothing to commit" 1>&2
+        exit 1
+    fi
+
+    for file in ".pig/index/"
+    do 
+        cp -r "$file" ".pig/repo/$commitNum"
+    done
+
+    echo "Committed as commit $commitNum"
+
+    echo "$commitNum $2" >> ".pig/commitLogs"
+
+
+# this else if statement handles if its pigs-commit -a -m
+elif [ "$#" -eq 3 ] && [ "$1" = "-a" ] && [ "$2" = "-m" ] && [ -n "$3" ]
+then 
+    :
+else
+    echo "usage: pigs-commit [-a] -m commit-message" 1>&2
+    exit 1
+fi
+
